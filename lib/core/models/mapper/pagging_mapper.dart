@@ -6,7 +6,7 @@ extension PaggingMapper on PaggingModel {
   PaggingEntity toDomain() => PaggingEntity(
         page: page,
         size: size,
-        totalItem: totalItem,
+        total: total,
         totalPage: totalPage,
       );
 }

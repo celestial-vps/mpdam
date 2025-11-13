@@ -38,7 +38,7 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
               ? data.data
               : [...state.customers, ...data.data],
           pageIndex: currentPage,
-          totalPages: data.pagging.totalPage,
+          totalPages: data.pagination.totalPage,
         ));
       },
     );
@@ -66,7 +66,7 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
         emit(state.copyWith(
           isLoadMore: false,
           pageIndex: nextPage,
-          totalPages: data.pagging.totalPage,
+          totalPages: data.pagination.totalPage,
           customers: [...state.customers, ...data.data],
         ));
       },

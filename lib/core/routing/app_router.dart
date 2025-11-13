@@ -23,6 +23,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: [
       ...authRoutes,
       ...homeRoutes,
+      // ...bankRoutes,
       ...customerRoutes,
       ...productRoutes,
       ...cartRoutes,

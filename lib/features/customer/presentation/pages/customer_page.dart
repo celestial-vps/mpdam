@@ -272,7 +272,7 @@ class _CustomerPageState extends ConsumerState<CustomerPage> {
                 search: {
                   'search': query, // map key-value untuk body dinamis
                 },
-                pagging: PaggingParam(
+                pagination: PaggingParam(
                   pageIndex: 1,
                   pageSize: 10,
                 ), // reset to page 1

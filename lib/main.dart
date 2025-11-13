@@ -5,23 +5,23 @@ import 'package:mpdam/core/routing/app_router_getx.dart';
 import 'package:mpdam/service_locator.dart';
 
 // GETX & BLOC
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await initDependencyInjection();
-//   await sl.allReady();
-
-//   runApp(const MyApp());
-// }
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize GetIt / DI
   await initDependencyInjection();
-  await sl.allReady(); // optional, waits until all async dependencies are ready
+  await sl.allReady();
 
-  runApp(ProviderScope(child: MyApp()));
+  runApp(const MyApp());
 }
+
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+
+//   // Initialize GetIt / DI
+//   await initDependencyInjection();
+//   await sl.allReady(); // optional, waits until all async dependencies are ready
+
+//   runApp(ProviderScope(child: MyApp()));
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

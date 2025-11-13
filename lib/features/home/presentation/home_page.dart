@@ -8,6 +8,7 @@ class HomePage extends ConsumerWidget {
 
   final List<Map<String, dynamic>> menuItems = const [
     {'icon': Icons.people, 'label': 'Data Pelanggan','key': '/customer'},
+    {'icon': Icons.article, 'label': 'Bank','key': '/bank'},
     {'icon': Icons.article, 'label': 'Berita','key': '/news'},
     {'icon': Icons.receipt, 'label': 'Tagihan','key': '/receipts'},
     {'icon': Icons.notifications, 'label': 'Notification','key': '/notifications'},

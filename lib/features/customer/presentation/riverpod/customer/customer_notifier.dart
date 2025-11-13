@@ -26,11 +26,11 @@ class CustomerNotifier extends StateNotifier<CustomerState> {
   //   final param =
   //       searchParam ??
   //       CustomerSearchParam(
-  //         pagging: PaggingParam(pageIndex: page, pageSize: 10),
+  //         pagination: PaggingParam(pageIndex: page, pageSize: 10),
   //       );
 
-  //   // Copy pagging dan attach search dinamis
-  //   final paggingWithSearch = param.pagging.copyWith(
+  //   // Copy pagination dan attach search dinamis
+  //   final paggingWithSearch = param.pagination.copyWith(
   //     search: param.search, // langsung pakai map dari UI
   //   );
 
@@ -39,7 +39,7 @@ class CustomerNotifier extends StateNotifier<CustomerState> {
   //   print(paggingWithSearch.search);
 
   //   // final result = await getInitCustomerUseCase(
-  //   //   param.pagging.copyWith(
+  //   //   param.pagination.copyWith(
   //   //     search: param.search != null ? {'query': param.search} : null,
   //   //   ),
   //   // );
@@ -57,7 +57,7 @@ class CustomerNotifier extends StateNotifier<CustomerState> {
   //       state = state.copyWith(
   //         isLoading: false,
   //         customers: refresh ? data.data : [...state.customers, ...data.data],
-  //         totalPages: data.pagging.totalPage,
+  //         totalPages: data.pagination.totalPage,
   //         pageIndex: page,
   //       );
   //     },
@@ -82,10 +82,10 @@ class CustomerNotifier extends StateNotifier<CustomerState> {
     final param =
         searchParam ??
         CustomerSearchParam(
-          pagging: PaggingParam(pageIndex: page, pageSize: 10),
+          pagination: PaggingParam(pageIndex: page, pageSize: 10),
         );
 
-    final paggingWithSearch = param.pagging.copyWith(search: param.search);
+    final paggingWithSearch = param.pagination.copyWith(search: param.search);
 
     final result = await getInitCustomerUseCase(paggingWithSearch);
 
@@ -102,7 +102,7 @@ class CustomerNotifier extends StateNotifier<CustomerState> {
           isLoading: false,
           // isSearching: false, // selesai searching
           customers: refresh ? data.data : [...state.customers, ...data.data],
-          totalPages: data.pagging.totalPage,
+          totalPages: data.pagination.totalPage,
           pageIndex: page,
         );
       },

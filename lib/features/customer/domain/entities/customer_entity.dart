@@ -2,13 +2,13 @@ import 'package:equatable/equatable.dart';
 import 'package:mpdam/core/entity/pagging_entity.dart';
 
 class CustomerEntity extends Equatable {
-  final PaggingEntity pagging;
+  final PaggingEntity pagination;
   final List<Customer> data;
 
-  const CustomerEntity({required this.pagging, required this.data});
+  const CustomerEntity({required this.pagination, required this.data});
 
   @override
-  List<Object?> get props => [pagging, data];
+  List<Object?> get props => [pagination, data];
 }
 
 class Customer extends Equatable {

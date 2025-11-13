@@ -1,15 +1,16 @@
 import 'package:get/get.dart';
 import 'package:mpdam/core/entity/pagging_param.dart';
 import 'package:mpdam/core/error/failure.dart';
-import 'package:mpdam/features/customer/domain/entities/customer_entity.dart';
-import 'package:mpdam/features/customer/domain/usecases/get_all_customer_usecase.dart';
+import 'package:mpdam/features/bank/domain/entities/bank_entity.dart';
+import 'package:mpdam/features/bank/domain/usecases/list_customer_usecase.dart';
 
-class CustomerController extends GetxController {
-  final GetInitCustomerUseCase getInitCustomerUseCase;
 
-  CustomerController({required this.getInitCustomerUseCase});
+class BankController extends GetxController {
+  final GetInitBankUseCase getInitBankUseCase;
 
-  var customers = <Customer>[].obs;
+  BankController({required this.getInitBankUseCase});
+
+  var banks = <Bank>[].obs;
   var isLoading = false.obs;
   var isLoadMore = false.obs;
   var errorMessage = ''.obs;
@@ -21,29 +22,29 @@ class CustomerController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchCustomers();
+    fetchBanks();
   }
 
-  Future<void> fetchCustomers({bool refresh = false}) async {
+  Future<void> fetchBanks({bool refresh = false}) async {
     if (refresh) pageIndex.value = 1;
     isLoading.value = true;
     errorMessage.value = '';
 
-    final result = await getInitCustomerUseCase(
+    final result = await getInitBankUseCase(
       PaggingParam(pageIndex: pageIndex.value, pageSize: pageSize),
     );
 
     result.fold(
       (failure) {
         errorMessage.value = _failureMessage(failure);
-        if (refresh) customers.clear();
+        if (refresh) banks.clear();
       },
       (data) {
         totalPages.value = data.pagination.totalPage;
         if (refresh) {
-          customers.value = data.data;
+          banks.value = data.data;
         } else {
-          customers.assignAll(data.data);
+          banks.assignAll(data.data);
         }
       },
     );
@@ -56,13 +57,13 @@ class CustomerController extends GetxController {
     isLoadMore.value = true;
     pageIndex.value += 1;
 
-    final result = await getInitCustomerUseCase(
+    final result = await getInitBankUseCase(
       PaggingParam(pageIndex: pageIndex.value, pageSize: pageSize),
     );
 
     result.fold(
       (failure) => errorMessage.value = _failureMessage(failure),
-      (data) => customers.addAll(data.data),
+      (data) => banks.addAll(data.data),
     );
 
     isLoadMore.value = false;

@@ -5,7 +5,7 @@ import 'package:mpdam/features/customer/data/models/mapper/customer_mapper.dart'
 
 extension ListCustomerMapper on ListCustomerModel {
   CustomerEntity toDomain() => CustomerEntity(
-        pagging: pagging.toDomain(),
+        pagination: pagination.toDomain(),
         data: data.toDomain(),
       );
 }

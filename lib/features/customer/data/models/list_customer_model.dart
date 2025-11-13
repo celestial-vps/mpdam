@@ -15,14 +15,14 @@ class ListCustomerModel {
   final String resultCode;
   final String httpStatus;
   final String developerMessage;
-  final PaggingModel pagging;
+  final PaggingModel pagination;
   final List<CustomerModel> data;
 
   ListCustomerModel({
     required this.resultCode,
     required this.httpStatus,
     required this.developerMessage,
-    required this.pagging,
+    required this.pagination,
     required this.data,
   });
 
@@ -30,14 +30,14 @@ class ListCustomerModel {
     String? resultCode,
     String? httpStatus,
     String? developerMessage,
-    PaggingModel? pagging,
+    PaggingModel? pagination,
     List<CustomerModel>? data,
   }) =>
       ListCustomerModel(
         resultCode: resultCode ?? this.resultCode,
         httpStatus: httpStatus ?? this.httpStatus,
         developerMessage: developerMessage ?? this.developerMessage,
-        pagging: pagging ?? this.pagging,
+        pagination: pagination ?? this.pagination,
         data: data ?? this.data,
       );
 
@@ -45,7 +45,7 @@ class ListCustomerModel {
         resultCode: json["resultCode"],
         httpStatus: json["http_status"],
         developerMessage: json["developerMessage"],
-        pagging: PaggingModel.fromJson(json["pagging"]),
+        pagination: PaggingModel.fromJson(json["pagination"]),
         data: List<CustomerModel>.from(json["data"].map((x) => CustomerModel.fromJson(x))),
       );
 
@@ -53,7 +53,7 @@ class ListCustomerModel {
         "resultCode": resultCode,
         "http_status": httpStatus,
         "developerMessage": developerMessage,
-        "pagging": pagging.toJson(),
+        "pagination": pagination.toJson(),
         "data": List<dynamic>.from(data.map((x) => x.toJson())),
       };
 }

@@ -1,5 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:mpdam/features/bank/data/datasource/bank_remote_datasource.dart';
+import 'package:mpdam/features/bank/data/repositories/bank_repository_imp.dart';
+import 'package:mpdam/features/bank/domain/repositories/bank_repository.dart';
+import 'package:mpdam/features/bank/domain/usecases/list_customer_usecase.dart';
+import 'package:mpdam/features/bank/presentation/controllers/bank_controller.dart';
 import 'package:mpdam/features/customer/domain/usecases/create_customer_usecase.dart';
 import 'package:mpdam/features/customer/domain/usecases/delete_customer_usecase.dart';
 import 'package:mpdam/features/customer/domain/usecases/get_customer_by_id_usecase.dart';
@@ -80,4 +85,45 @@ Future<void> initDependencyInjection() async {
   sl.registerLazySingleton<AddCustomerController>(
     () => AddCustomerController(createCustomerUseCase: sl()),
   );
+
+
+  // Bank
+  // 1. Datasource
+  sl.registerLazySingleton<BankRemoteDataSource>(
+    () => BankRemoteDataSourceImplementation(httpManager: sl()),
+  );
+
+  // 2. Repository
+  sl.registerLazySingleton<BankRepository>(
+    () => BankRepositoryImplementation(
+      networkInfo: sl(),
+      bankRemoteDataSource: sl(),
+    ),
+  );
+
+  // 3. Usecase
+  sl.registerLazySingleton<GetInitBankUseCase>(
+    () => GetInitBankUseCase(sl()),
+  );
+  // sl.registerLazySingleton<CreateBankUseCase>(
+  //   () => CreateBankUseCase(sl()), // biasanya inject repository
+  // );
+  // sl.registerLazySingleton<GetBankByIdUseCase>(
+  //   () => GetBankByIdUseCase(sl()),
+  // );
+  // sl.registerLazySingleton<UpdateBankUseCase>(
+  //   () => UpdateBankUseCase(sl()),
+  // );
+  // sl.registerLazySingleton<DeleteBankUseCase>(
+  //   () => DeleteBankUseCase(sl()),
+  // );
+
+  // 4. Controller (GetX)
+  sl.registerLazySingleton<BankController>(
+    () => BankController(getInitBankUseCase: sl()),
+  );
+
+  // sl.registerLazySingleton<AddBankController>(
+  //   () => AddBankController(createBankUseCase: sl()),
+  // );
 }

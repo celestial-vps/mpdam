@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:mpdam/core/routing/bank_routes.dart';
 import 'package:mpdam/core/routing/cart_routes.dart';
 import 'package:mpdam/core/routing/customer_routes.dart';
 import 'package:mpdam/core/routing/news_routes.dart';
@@ -11,6 +12,7 @@ final homeRoutes = [
     path: '/home',
     builder: (context, state) => const HomePage(),
     routes: [
+      ...bankRoutes,
       ...productRoutes, 
       ...newsRoutes,
       ...customerRoutes,
