@@ -2,8 +2,8 @@ import 'package:get/get.dart';
 import 'package:mpdam/core/entity/pagging_param.dart';
 import 'package:mpdam/core/error/failure.dart';
 import 'package:mpdam/features/bank/domain/entities/bank_entity.dart';
-import 'package:mpdam/features/bank/domain/usecases/list_customer_usecase.dart';
-
+import 'package:mpdam/features/bank/domain/entities/search_bank_entity.dart';
+import 'package:mpdam/features/bank/domain/usecases/list_bank_usecase.dart';
 
 class BankController extends GetxController {
   final GetInitBankUseCase getInitBankUseCase;
@@ -15,37 +15,44 @@ class BankController extends GetxController {
   var isLoadMore = false.obs;
   var errorMessage = ''.obs;
 
-  var pageIndex = 1.obs;
-  var pageSize = 10;
-  var totalPages = 1.obs;
+  var pageIndex = 1;
+  final int pageSize = 10;
+  var totalPages = 1;
+
+  BankSearchParam? currentSearchParam;
 
   @override
   void onInit() {
     super.onInit();
-    fetchBanks();
+    fetchBanks(refresh: true);
   }
 
-  Future<void> fetchBanks({bool refresh = false}) async {
-    if (refresh) pageIndex.value = 1;
+  Future<void> fetchBanks({bool refresh = false, BankSearchParam? searchParam}) async {
+    if (refresh) {
+      pageIndex = 1;
+      banks.clear();
+      if (searchParam != null) currentSearchParam = searchParam;
+    }
+
     isLoading.value = true;
     errorMessage.value = '';
 
     final result = await getInitBankUseCase(
-      PaggingParam(pageIndex: pageIndex.value, pageSize: pageSize),
+      PaggingParam(
+        pageIndex: pageIndex,
+        pageSize: pageSize,
+        search: currentSearchParam?.search,
+      ),
     );
 
     result.fold(
       (failure) {
         errorMessage.value = _failureMessage(failure);
-        if (refresh) banks.clear();
       },
       (data) {
-        totalPages.value = data.pagination.totalPage;
-        if (refresh) {
-          banks.value = data.data;
-        } else {
-          banks.assignAll(data.data);
-        }
+        totalPages = data.pagination.totalPage;
+        banks.addAll(data.data);
+        pageIndex++;
       },
     );
 
@@ -53,17 +60,24 @@ class BankController extends GetxController {
   }
 
   Future<void> loadMore() async {
-    if (isLoadMore.value || pageIndex.value >= totalPages.value) return;
+    if (isLoadMore.value || pageIndex > totalPages) return;
+
     isLoadMore.value = true;
-    pageIndex.value += 1;
 
     final result = await getInitBankUseCase(
-      PaggingParam(pageIndex: pageIndex.value, pageSize: pageSize),
+      PaggingParam(
+        pageIndex: pageIndex,
+        pageSize: pageSize,
+        search: currentSearchParam?.search,
+      ),
     );
 
     result.fold(
       (failure) => errorMessage.value = _failureMessage(failure),
-      (data) => banks.addAll(data.data),
+      (data) {
+        banks.addAll(data.data);
+        pageIndex++;
+      },
     );
 
     isLoadMore.value = false;

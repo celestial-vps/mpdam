@@ -3,8 +3,7 @@ import 'package:mpdam/core/entity/pagging_param.dart';
 
 class BankSearchParam extends Equatable {
   final PaggingParam pagination;
-  final Map<String, dynamic>?
-  search;
+  final Map<String, dynamic>? search;
 
   const BankSearchParam({required this.pagination, this.search});
 

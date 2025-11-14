@@ -3,8 +3,15 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:mpdam/features/bank/data/datasource/bank_remote_datasource.dart';
 import 'package:mpdam/features/bank/data/repositories/bank_repository_imp.dart';
 import 'package:mpdam/features/bank/domain/repositories/bank_repository.dart';
-import 'package:mpdam/features/bank/domain/usecases/list_customer_usecase.dart';
+import 'package:mpdam/features/bank/domain/usecases/create_bank_usecase.dart';
+import 'package:mpdam/features/bank/domain/usecases/delete_delete_usecase.dart';
+import 'package:mpdam/features/bank/domain/usecases/get_bank_by_id_usecase.dart';
+import 'package:mpdam/features/bank/domain/usecases/list_bank_usecase.dart';
+import 'package:mpdam/features/bank/domain/usecases/update_bank_usecase.dart';
+import 'package:mpdam/features/bank/presentation/controllers/add_bank_controller.dart';
 import 'package:mpdam/features/bank/presentation/controllers/bank_controller.dart';
+import 'package:mpdam/features/bank/presentation/controllers/delete-bank_controller.dart';
+import 'package:mpdam/features/bank/presentation/controllers/edit_bank_controller.dart';
 import 'package:mpdam/features/customer/domain/usecases/create_customer_usecase.dart';
 import 'package:mpdam/features/customer/domain/usecases/delete_customer_usecase.dart';
 import 'package:mpdam/features/customer/domain/usecases/get_customer_by_id_usecase.dart';
@@ -86,7 +93,6 @@ Future<void> initDependencyInjection() async {
     () => AddCustomerController(createCustomerUseCase: sl()),
   );
 
-
   // Bank
   // 1. Datasource
   sl.registerLazySingleton<BankRemoteDataSource>(
@@ -102,25 +108,27 @@ Future<void> initDependencyInjection() async {
   );
 
   // 3. Usecase
-  sl.registerLazySingleton<GetInitBankUseCase>(
-    () => GetInitBankUseCase(sl()),
+  sl.registerLazySingleton<GetInitBankUseCase>(() => GetInitBankUseCase(sl()));
+  sl.registerLazySingleton<CreateBankUseCase>(
+    () => CreateBankUseCase(sl()), // biasanya inject repository
   );
-  // sl.registerLazySingleton<CreateBankUseCase>(
-  //   () => CreateBankUseCase(sl()), // biasanya inject repository
-  // );
-  // sl.registerLazySingleton<GetBankByIdUseCase>(
-  //   () => GetBankByIdUseCase(sl()),
-  // );
-  // sl.registerLazySingleton<UpdateBankUseCase>(
-  //   () => UpdateBankUseCase(sl()),
-  // );
-  // sl.registerLazySingleton<DeleteBankUseCase>(
-  //   () => DeleteBankUseCase(sl()),
-  // );
+  sl.registerLazySingleton<GetBankByIdUseCase>(() => GetBankByIdUseCase(sl()));
+  sl.registerLazySingleton<UpdateBankUseCase>(() => UpdateBankUseCase(sl()));
+  sl.registerLazySingleton<DeleteBankUseCase>(() => DeleteBankUseCase(sl()));
 
   // 4. Controller (GetX)
   sl.registerLazySingleton<BankController>(
     () => BankController(getInitBankUseCase: sl()),
+  );
+  sl.registerLazySingleton<AddBankController>(
+    () => AddBankController(createBankUseCase: sl()),
+  );
+
+  sl.registerLazySingleton<EditBankController>(
+    () => EditBankController(getBankByIdUseCase: sl(), updateBankUseCase: sl()),
+  );
+  sl.registerLazySingleton<DeleteBankController>(
+    () => DeleteBankController( deleteBankUseCase: sl()),
   );
 
   // sl.registerLazySingleton<AddBankController>(

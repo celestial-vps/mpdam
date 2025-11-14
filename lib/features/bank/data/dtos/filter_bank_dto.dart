@@ -18,3 +18,12 @@ class FilterBankDto {
 
   Map<String, dynamic> toJson() => {"search": search};
 }
+
+extension FilterBankDtoMapper  on FilterBankDto {
+  static FilterBankDto? fromMap(Map<String, dynamic>? map) {
+    if (map == null) return null;
+    return FilterBankDto(
+      search: map['search']?.toString() ?? '',
+    );
+  }
+}
