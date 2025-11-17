@@ -11,7 +11,10 @@ import 'package:mpdam/core/widgets/textbox/password_textbox.dart';
 import '../controllers/login_controller.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  /// Bisa inject controller dari route
+  final LoginController controller;
+
+  const LoginPage({super.key, required this.controller});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -37,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<LoginController>();
+    final controller = widget.controller;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,

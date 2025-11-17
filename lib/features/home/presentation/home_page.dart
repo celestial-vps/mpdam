@@ -1,54 +1,66 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
-import '../../../providers/auth_provider.dart';
+import 'package:mpdam/features/auth/presentation/controllers/login_controller.dart';
 
-class HomePage extends ConsumerWidget {
-  const HomePage({super.key});
+class HomePage extends StatelessWidget {
+  HomePage({super.key});
+
+  // FIX: Ambil dari GetX, bukan dari service locator
+  // final LoginController loginController = Get.find<LoginController>(tag: 'login');
+  final loginController =
+      Get.find<LoginController>(); // aman karena di dalam class
 
   final List<Map<String, dynamic>> menuItems = const [
-    {'icon': Icons.people, 'label': 'Data Pelanggan','key': '/customer'},
-    {'icon': Icons.article, 'label': 'Bank','key': '/bank'},
-    {'icon': Icons.article, 'label': 'Berita','key': '/news'},
-    {'icon': Icons.receipt, 'label': 'Tagihan','key': '/receipts'},
-    {'icon': Icons.notifications, 'label': 'Notification','key': '/notifications'},
-    {'icon': Icons.more_horiz, 'label': 'Lain-lain','key': '/more'},
-    {'icon': Icons.person, 'label': 'Profile','key': '/profile'},
-    {'icon': Icons.settings, 'label': 'Settings','key': 'settings'},
-    {'icon': Icons.help_outline, 'label': 'Help','key': '/help'},
-    {'icon': Icons.info, 'label': 'About','key': '/info'},
+    {'icon': Icons.people, 'label': 'Data Pelanggan', 'key': '/customer'},
+    {'icon': Icons.article, 'label': 'Bank', 'key': '/bank'},
+    {'icon': Icons.article, 'label': 'Berita', 'key': '/news'},
+    {'icon': Icons.receipt, 'label': 'Tagihan', 'key': '/receipts'},
+    {
+      'icon': Icons.notifications,
+      'label': 'Notification',
+      'key': '/notifications',
+    },
+    {'icon': Icons.more_horiz, 'label': 'Lain-lain', 'key': '/more'},
+    {'icon': Icons.person, 'label': 'Profile', 'key': '/profile'},
+    {'icon': Icons.settings, 'label': 'Settings', 'key': '/settings'},
+    {'icon': Icons.help_outline, 'label': 'Help', 'key': '/help'},
+    {'icon': Icons.info, 'label': 'About', 'key': '/info'},
   ];
 
   final List<Map<String, String>> beritaList = const [
     {
       'judul': 'Pemadaman Listrik Terjadwal',
       'tanggal': '21 Juli 2025',
-      'ringkasan': 'Pemadaman listrik akan dilakukan pada 23 Juli 2025 dari jam 08.00 sampai 12.00.'
+      'ringkasan':
+          'Pemadaman listrik akan dilakukan pada 23 Juli 2025 dari jam 08.00 sampai 12.00.',
     },
     {
       'judul': 'Peningkatan Layanan Pelanggan',
       'tanggal': '20 Juli 2025',
-      'ringkasan': 'Kami terus berupaya meningkatkan kualitas layanan pelanggan untuk kenyamanan Anda.'
+      'ringkasan':
+          'Kami terus berupaya meningkatkan kualitas layanan pelanggan untuk kenyamanan Anda.',
     },
     {
       'judul': 'Pengumuman Tarif Baru',
       'tanggal': '19 Juli 2025',
-      'ringkasan': 'Mulai 1 Agustus 2025, tarif listrik akan mengalami penyesuaian sesuai regulasi terbaru.'
+      'ringkasan':
+          'Mulai 1 Agustus 2025, tarif listrik akan mengalami penyesuaian sesuai regulasi terbaru.',
     },
   ];
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home Page'),
         actions: [
           IconButton(
             onPressed: () {
-              ref.read(authProvider.notifier).logout();
+              loginController.logout(context);
             },
             icon: const Icon(Icons.logout),
-          )
+          ),
         ],
       ),
       body: Padding(
@@ -59,7 +71,7 @@ class HomePage extends ConsumerWidget {
             Expanded(
               flex: 4,
               child: GridView.builder(
-                physics: const NeverScrollableScrollPhysics(), // supaya gak bisa scroll grid
+                physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   crossAxisSpacing: 16,
@@ -70,31 +82,22 @@ class HomePage extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   final item = menuItems[index];
                   return ElevatedButton(
-                    onPressed: () {
-                       context.push('${item['key']}'); 
-                      // ScaffoldMessenger.of(context).showSnackBar(
-                      //   SnackBar(content: Text('Clicked: ${item['label']}')),
-                      // );
-                    },
+                    onPressed: () => context.push(item['key']),
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.all(12), backgroundColor: Colors.blue.shade700,
+                      padding: const EdgeInsets.all(12),
+                      backgroundColor: Colors.blue.shade700,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          item['icon'] as IconData,
-                          size: 36,
-                          color: Colors.white,
-                        ),
+                        Icon(item['icon'], size: 36, color: Colors.white),
                         const SizedBox(height: 8),
                         Flexible(
                           child: Text(
-                            item['label'] as String,
+                            item['label'],
                             textAlign: TextAlign.center,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
@@ -113,7 +116,6 @@ class HomePage extends ConsumerWidget {
 
             const SizedBox(height: 16),
 
-            // Judul Berita
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -124,7 +126,6 @@ class HomePage extends ConsumerWidget {
 
             const SizedBox(height: 12),
 
-            // List Berita (Scroll)
             Expanded(
               flex: 3,
               child: ListView.separated(
@@ -134,30 +135,28 @@ class HomePage extends ConsumerWidget {
                   final berita = beritaList[index];
                   return ListTile(
                     title: Text(
-                      berita['judul'] ?? '',
+                      berita['judul']!,
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          berita['tanggal'] ?? '',
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                          berita['tanggal']!,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          berita['ringkasan'] ?? '',
+                          berita['ringkasan']!,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                     leading: const Icon(Icons.article_outlined),
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Buka berita: ${berita['judul']}')),
-                      );
-                    },
                   );
                 },
               ),

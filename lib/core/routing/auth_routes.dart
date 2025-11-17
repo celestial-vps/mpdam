@@ -1,21 +1,19 @@
-// lib/core/router/auth_routes.dart
 import 'package:go_router/go_router.dart';
-import 'package:mpdam/features/auth/presentation/bindings/auth_binding.dart';
+import 'package:mpdam/features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
-import '../../features/auth/presentation/pages/register_page.dart';
-import '../../features/auth/presentation/pages/forgot_password_page.dart';
+import '../../features/auth/presentation/controllers/login_controller.dart';
+import 'package:get/get.dart';
 
-final authRoutes = [
+final loginController = Get.find<LoginController>();
+
+final List<GoRoute> authRoutes = [
   GoRoute(
     path: '/login',
-    builder: (context, state) {
-      AuthBinding.init();
-      return LoginPage();
-    },
+    builder: (context, state) => LoginPage(controller: loginController),
   ),
-  GoRoute(path: '/register', builder: (context, state) => const RegisterPage()),
+  // misal register route
   GoRoute(
-    path: '/forgot-password',
-    builder: (context, state) => const ForgotPasswordPage(),
+    path: '/register',
+    builder: (context, state) => RegisterPage(),
   ),
 ];

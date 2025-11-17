@@ -10,7 +10,7 @@ import 'package:mpdam/features/home/presentation/home_page.dart';
 final homeRoutes = [
   GoRoute(
     path: '/home',
-    builder: (context, state) => const HomePage(),
+    builder: (context, state) =>   HomePage(),
     routes: [
       ...bankRoutes,
       ...productRoutes, 

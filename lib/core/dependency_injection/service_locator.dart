@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:mpdam/features/auth/data/repositories/auth_repository_implementation.dart';
+import 'package:mpdam/features/auth/domain/usecases/check_signin_usecase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Core
@@ -74,7 +75,9 @@ Future<void> initDependencyInjection() async {
     ),
   );
 
+  // Auth UseCases
   sl.registerLazySingleton<LoginUseCase>(() => LoginUseCase(sl()));
+  sl.registerLazySingleton<CheckSigninUseCase>(() => CheckSigninUseCase(sl()));
 
   // Customer ======================================================
   sl.registerLazySingleton<CustomerRemoteDataSource>(
