@@ -1,5 +1,6 @@
 import 'package:mpdam/core/network/api_constants.dart';
 import 'package:mpdam/core/network/http_manager.dart';
+import 'package:mpdam/core/storage/auth_local_datasource.dart';
 import 'package:mpdam/features/bank/data/dtos/create_bank_dto.dart';
 import 'package:mpdam/features/bank/data/dtos/filter_bank_dto.dart';
 import 'package:mpdam/features/bank/data/dtos/update_bank_dto.dart';
@@ -22,19 +23,27 @@ abstract class BankRemoteDataSource {
 
 class BankRemoteDataSourceImplementation extends BankRemoteDataSource {
   final HttpManager _httpManager;
+  final AuthLocalDataSource _authLocal;
   final String baseUrl; // simpan baseUrl di sini
   final bool enableLogging;
+  String? _cachedToken; // simpan token di sini
 
   BankRemoteDataSourceImplementation({
     required HttpManager httpManager,
+    required AuthLocalDataSource authLocal,
     this.baseUrl = ApiConstants.baseUrl, // default bisa diganti
     this.enableLogging = true,
-  }) : _httpManager = httpManager;
+  }) : _httpManager = httpManager,
+       _authLocal = authLocal;
 
   Map<String, String> _defaultHeaders() => {
-    'Authorization': 'Bearer ${ApiConstants.staticToken}',
+    'Authorization': 'Bearer $_cachedToken',
     'Content-Type': 'application/json',
   };
+
+  Future<void> updateToken() async {
+    _cachedToken = _authLocal.token;
+  }
 
   void _log(String title, dynamic value) {
     if (enableLogging) {
@@ -125,7 +134,7 @@ class BankRemoteDataSourceImplementation extends BankRemoteDataSource {
   @override
   Future<void> updateBank(String oid, UpdateBankDto data) async {
     try {
-      final response= await _httpManager.put(
+      final response = await _httpManager.put(
         url: "${ApiConstants.bankRoot}/$oid",
         headers: _defaultHeaders(),
         body: data.toJson(),

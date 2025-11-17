@@ -121,7 +121,10 @@ Future<void> initDependencyInjection() async {
 
   // Bank ======================================================
   sl.registerLazySingleton<BankRemoteDataSource>(
-    () => BankRemoteDataSourceImplementation(httpManager: sl()),
+    () => BankRemoteDataSourceImplementation(
+      httpManager: sl(),
+      authLocal: sl(), // <- tambahkan ini
+    ),
   );
 
   sl.registerLazySingleton<BankRepository>(

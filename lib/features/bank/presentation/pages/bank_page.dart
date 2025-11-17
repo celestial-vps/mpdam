@@ -7,7 +7,6 @@ import 'package:mpdam/features/bank/domain/entities/search_bank_entity.dart';
 import 'package:mpdam/features/bank/presentation/controllers/delete_bank_controller.dart';
 import 'package:mpdam/features/bank/presentation/widgets/bank_body.dart';
 import 'package:mpdam/features/bank/presentation/controllers/bank_controller.dart';
-import 'package:mpdam/core/dependency_injection/service_locator.dart';
 import 'package:go_router/go_router.dart';
 
 class BankPage extends StatefulWidget {

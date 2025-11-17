@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mpdam/core/storage/auth_local_datasource.dart';
-import 'package:mpdam/core/usecase/usecase.dart';
 import 'package:mpdam/features/auth/domain/usecases/login_usecase.dart';
 import 'package:mpdam/features/auth/domain/usecases/check_signin_usecase.dart';
 import 'package:mpdam/features/auth/domain/entities/login_param.dart';
