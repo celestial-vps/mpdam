@@ -18,51 +18,47 @@ class LoginController extends GetxController {
   });
 
   var isLoading = false.obs;
-  RxBool isLoggedIn = false.obs;
+  var isLoggedIn = false.obs;
+  var errorMessage = ''.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-  }
+  /// CALLBACKS untuk UI
+  void Function()? onLoginSuccess;
+  void Function()? onLogout;
+  void Function()? onAlreadyLoggedIn;
 
-  /// Method khusus untuk main.dart sebelum runApp
   Future<void> initLoginStatusForMain() async {
     isLoggedIn.value = await local.hasToken();
+
     if (isLoggedIn.value) {
       print('>>> Token ditemukan: ${local.token}');
+      onAlreadyLoggedIn?.call();
     }
   }
 
-  Future<void> login(BuildContext context, String email, String password) async {
+  Future<void> login(String email, String password) async {
     if (email.isEmpty || password.isEmpty) {
-      return _showError(context, "Email dan password wajib diisi");
+      errorMessage.value = "Email dan password wajib diisi";
+      return;
     }
 
     isLoading.value = true;
 
-    final result = await loginUseCase(LoginParam(email: email, password: password));
+    final result = await loginUseCase(
+      LoginParam(email: email, password: password),
+    );
 
     isLoading.value = false;
 
-    result.fold(
-      (failure) => _showError(context, failure.message),
-      (user) {
-        local.persistToken(user.token);
-        isLoggedIn.value = true;
-        print('>>> Login sukses, token: ${user.token}');
-        GoRouter.of(context).go('/home');
-      },
-    );
+    result.fold((failure) => errorMessage.value = failure.message, (user) {
+      local.persistToken(user.token);
+      isLoggedIn.value = true;
+      onLoginSuccess?.call();
+    });
   }
 
-  void logout(BuildContext context) {
+  void logout() {
     local.removeToken();
     isLoggedIn.value = false;
-    print('>>> User logout');
-    GoRouter.of(context).go('/login');
-  }
-
-  void _showError(BuildContext context, String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    onLogout?.call();
   }
 }

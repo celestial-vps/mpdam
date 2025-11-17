@@ -57,7 +57,8 @@ class HomePage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              loginController.logout(context);
+              loginController.onLogout = () => context.go('/login');
+              loginController.logout();
             },
             icon: const Icon(Icons.logout),
           ),

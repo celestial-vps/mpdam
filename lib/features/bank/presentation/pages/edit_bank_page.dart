@@ -17,22 +17,30 @@ class _EditBankPageState extends State<EditBankPage> {
   late TextEditingController bankCodeController;
   late TextEditingController bankNameController;
 
-  late EditBankController controller;
-
-  bool _initialized = false; // untuk menghindari reset textfield
+  late EditBankController controller; // jangan pakai final
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
+
+    // Buat controller baru setiap kali page dibuka
+    Get.create<EditBankController>(
+      () =>
+          EditBankController(getBankByIdUseCase: sl(), updateBankUseCase: sl()),
+    );
+
+    // Ambil instance controller yang baru dibuat
+    controller = Get.find<EditBankController>();
+
     bankCodeController = TextEditingController();
     bankNameController = TextEditingController();
 
-    controller = sl<EditBankController>();
-
-    _initialized = false; // <-- FIX: reset supaya edit ke-2 bekerja
-
+    // Load data bank setelah frame build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.bank.value = null;
+      controller.errorMessage.value = '';
+      controller.isLoading.value = true;
       controller.loadBank(widget.bankId);
     });
   }
@@ -41,6 +49,10 @@ class _EditBankPageState extends State<EditBankPage> {
   void dispose() {
     bankCodeController.dispose();
     bankNameController.dispose();
+
+    // Hancurkan controller saat page dispose agar edit berikutnya fresh
+    Get.delete<EditBankController>();
+
     super.dispose();
   }
 
@@ -90,7 +102,6 @@ class _EditBankPageState extends State<EditBankPage> {
                   decoration: const InputDecoration(labelText: 'Bank Name'),
                 ),
                 const SizedBox(height: 20),
-
                 ElevatedButton(
                   onPressed: controller.isUpdating.value
                       ? null
@@ -131,9 +142,7 @@ class _EditBankPageState extends State<EditBankPage> {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 10),
-
                 if (controller.errorMessage.isNotEmpty)
                   Text(
                     controller.errorMessage.value,

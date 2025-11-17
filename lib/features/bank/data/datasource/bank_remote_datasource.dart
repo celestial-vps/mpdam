@@ -24,25 +24,25 @@ abstract class BankRemoteDataSource {
 class BankRemoteDataSourceImplementation extends BankRemoteDataSource {
   final HttpManager _httpManager;
   final AuthLocalDataSource _authLocal;
-  final String baseUrl; // simpan baseUrl di sini
+  final String baseUrl;
   final bool enableLogging;
-  String? _cachedToken; // simpan token di sini
 
   BankRemoteDataSourceImplementation({
     required HttpManager httpManager,
     required AuthLocalDataSource authLocal,
-    this.baseUrl = ApiConstants.baseUrl, // default bisa diganti
+    this.baseUrl = ApiConstants.baseUrl,
     this.enableLogging = true,
-  }) : _httpManager = httpManager,
-       _authLocal = authLocal;
+  })  : _httpManager = httpManager,
+        _authLocal = authLocal;
 
-  Map<String, String> _defaultHeaders() => {
-    'Authorization': 'Bearer $_cachedToken',
-    'Content-Type': 'application/json',
-  };
+  // FIXED — header aman & valid
+  Map<String, String> _defaultHeaders() {
+    final token = _authLocal.token?.trim();
 
-  Future<void> updateToken() async {
-    _cachedToken = _authLocal.token;
+    return {
+      "Content-Type": "application/json",
+      if (token != null && token.isNotEmpty) "Authorization": "Bearer $token",
+    };
   }
 
   void _log(String title, dynamic value) {
@@ -67,6 +67,7 @@ class BankRemoteDataSourceImplementation extends BankRemoteDataSource {
 
       _log('QUERY PARAMETERS', query);
       _log('REQUEST BODY', body);
+      _log('HEADERS SENT', _defaultHeaders());
 
       final response = await _httpManager.post(
         url: "${ApiConstants.bankRoot}/q",
@@ -82,16 +83,14 @@ class BankRemoteDataSourceImplementation extends BankRemoteDataSource {
     } on DioException catch (e) {
       _log('DIO ERROR', e.response?.data ?? e.message);
       rethrow;
-    } catch (e, st) {
-      _log('UNKNOWN ERROR', e);
-      _log('STACKTRACE', st);
-      rethrow;
     }
   }
 
   @override
   Future<BankModel> getBankById(String oid) async {
     try {
+      _log('HEADERS SENT', _defaultHeaders());
+
       final response = await _httpManager.get(
         url: "${ApiConstants.bankRoot}/$oid",
         headers: _defaultHeaders(),
@@ -100,13 +99,9 @@ class BankRemoteDataSourceImplementation extends BankRemoteDataSource {
 
       _log('API RESPONSE GET BANK', response.data);
 
-      return BankModel.fromJson(response.data['data']);
+      return BankModel.fromJson(response.data["data"]);
     } on DioException catch (e) {
       _log('DIO ERROR', e.response?.data ?? e.message);
-      rethrow;
-    } catch (e, st) {
-      _log('UNKNOWN ERROR', e);
-      _log('STACKTRACE', st);
       rethrow;
     }
   }
@@ -114,19 +109,18 @@ class BankRemoteDataSourceImplementation extends BankRemoteDataSource {
   @override
   Future<void> createBank(CreateBankDto data) async {
     try {
+      _log('HEADERS SENT', _defaultHeaders());
+
       await _httpManager.post(
-        url: '${ApiConstants.bankRoot}/create',
+        url: "${ApiConstants.bankRoot}/create",
         headers: _defaultHeaders(),
         body: data.toJson(),
         baseUrl: baseUrl,
       );
+
       _log('CREATE BANK', 'Success');
     } on DioException catch (e) {
       _log('DIO ERROR', e.response?.data ?? e.message);
-      rethrow;
-    } catch (e, st) {
-      _log('UNKNOWN ERROR', e);
-      _log('STACKTRACE', st);
       rethrow;
     }
   }
@@ -134,20 +128,19 @@ class BankRemoteDataSourceImplementation extends BankRemoteDataSource {
   @override
   Future<void> updateBank(String oid, UpdateBankDto data) async {
     try {
+      _log('HEADERS SENT', _defaultHeaders());
+
       final response = await _httpManager.put(
         url: "${ApiConstants.bankRoot}/$oid",
         headers: _defaultHeaders(),
         body: data.toJson(),
         baseUrl: baseUrl,
       );
-      _log('UPDATE BANK RESPONSE', response);
+
+      _log('UPDATE BANK RESPONSE', response.data);
       _log('UPDATE BANK', 'Success');
     } on DioException catch (e) {
       _log('DIO ERROR', e.response?.data ?? e.message);
-      rethrow;
-    } catch (e, st) {
-      _log('UNKNOWN ERROR', e);
-      _log('STACKTRACE', st);
       rethrow;
     }
   }
@@ -155,18 +148,17 @@ class BankRemoteDataSourceImplementation extends BankRemoteDataSource {
   @override
   Future<void> deleteBank(String oid) async {
     try {
+      _log('HEADERS SENT', _defaultHeaders());
+
       await _httpManager.delete(
         url: "${ApiConstants.bankRoot}/delete/$oid",
         headers: _defaultHeaders(),
         baseUrl: baseUrl,
       );
+
       _log('DELETE BANK', 'Success');
     } on DioException catch (e) {
       _log('DIO ERROR', e.response?.data ?? e.message);
-      rethrow;
-    } catch (e, st) {
-      _log('UNKNOWN ERROR', e);
-      _log('STACKTRACE', st);
       rethrow;
     }
   }

@@ -74,7 +74,6 @@ class _LoginPageState extends State<LoginPage> {
                 title: 'Continue',
                 onPressed: () {
                   controller.login(
-                    context,
                     emailTextCon.text.trim(),
                     passwordTextCon.text.trim(),
                   );
