@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mpdam/features/customer/domain/entities/customer_entity.dart';
 import 'package:mpdam/features/customer/domain/usecases/delete_customer_usecase.dart';
 
 class DeleteCustomerState {

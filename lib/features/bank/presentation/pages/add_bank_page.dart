@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mpdam/features/bank/domain/entities/create_bank_entity.dart';
 import 'package:mpdam/features/bank/presentation/controllers/add_bank_controller.dart';
-import 'package:mpdam/service_locator.dart'; // <- pastikan import sl
+import 'package:mpdam/core/dependency_injection/service_locator.dart'; // <- pastikan import sl
 
 class AddBankPage extends StatelessWidget {
   const AddBankPage({super.key});
@@ -36,17 +36,6 @@ class AddBankPage extends StatelessWidget {
                         ),
                       ),
                     TextFormField(
-                      controller: _bankNameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Bank Name',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) => value == null || value.isEmpty
-                          ? 'Please enter bank bankName'
-                          : null,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
                       controller: _bankCodeController,
                       decoration: const InputDecoration(
                         labelText: 'Bank Code',
@@ -54,6 +43,17 @@ class AddBankPage extends StatelessWidget {
                       ),
                       validator: (value) => value == null || value.isEmpty
                           ? 'Please enter bank bankCode'
+                          : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _bankNameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Bank Name',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Please enter bank bankName'
                           : null,
                     ),
                     const SizedBox(height: 24),

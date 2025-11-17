@@ -3,7 +3,6 @@ import 'package:dartz/dartz.dart';
 import 'package:mpdam/core/entity/pagging_param.dart';
 import 'package:mpdam/core/error/failure.dart';
 import 'package:mpdam/core/usecase/usecase.dart';
-import 'package:mpdam/features/bank/data/dtos/filter_bank_dto.dart';
 import 'package:mpdam/features/bank/domain/entities/bank_entity.dart';
 import 'package:mpdam/features/bank/domain/repositories/bank_repository.dart';
 

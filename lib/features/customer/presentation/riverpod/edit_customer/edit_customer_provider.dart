@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mpdam/service_locator.dart';
+import 'package:mpdam/core/dependency_injection/service_locator.dart';
 import 'edit_customer_notifier.dart';
 import 'edit_customer_state.dart';
 

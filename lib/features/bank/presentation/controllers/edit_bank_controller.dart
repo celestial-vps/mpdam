@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mpdam/features/bank/domain/entities/bank_entity.dart';
 import 'package:mpdam/features/bank/domain/entities/update_bank_entity.dart';
@@ -14,7 +15,7 @@ class EditBankController extends GetxController {
   });
 
   /// Reactive variables
-  var bank = Rxn<Bank>();          // Rxn = nullable reactive
+  var bank = Rxn<Bank>(); // Rxn = nullable reactive
   var isLoading = false.obs;
   var isUpdating = false.obs;
   var errorMessage = ''.obs;
@@ -49,7 +50,10 @@ class EditBankController extends GetxController {
       bankCode: bankCode,
       bankName: bankName,
     );
-
+    // Log untuk memastikan nilai yang dikirim
+    debugPrint('Updating bank with:');
+    debugPrint('bankCode: $bankCode');
+    debugPrint('bankName: $bankName');
     try {
       isUpdating.value = true;
       errorMessage.value = '';
@@ -58,20 +62,17 @@ class EditBankController extends GetxController {
 
       bool success = false;
 
-      result.fold(
-        (failure) => errorMessage.value = failure.message,
-        (_) {
-          bank.value = Bank(
-            oid: currentBank.oid,
-            bankCode: updatedEntity.bankCode,
-            bankName: updatedEntity.bankName,
-            createdAt: currentBank.createdAt,
-            updatedAt: DateTime.now(),
-          );
+      result.fold((failure) => errorMessage.value = failure.message, (_) {
+        bank.value = Bank(
+          oid: currentBank.oid,
+          bankCode: updatedEntity.bankCode,
+          bankName: updatedEntity.bankName,
+          createdAt: currentBank.createdAt,
+          updatedAt: DateTime.now(),
+        );
 
-          success = true;
-        },
-      );
+        success = true;
+      });
 
       return success;
     } finally {

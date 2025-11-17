@@ -2,9 +2,10 @@ import 'package:mpdam/core/network/api_constants.dart';
 import 'package:mpdam/core/network/http_manager.dart';
 import 'package:mpdam/features/bank/data/dtos/create_bank_dto.dart';
 import 'package:mpdam/features/bank/data/dtos/filter_bank_dto.dart';
+import 'package:mpdam/features/bank/data/dtos/update_bank_dto.dart';
 import 'package:mpdam/features/bank/data/models/bank_model.dart';
 import 'package:mpdam/features/bank/data/models/list_bank_model.dart';
-import 'package:mpdam/features/bank/data/dtos/update_bank_dto.dart';
+import 'package:dio/dio.dart';
 
 abstract class BankRemoteDataSource {
   Future<ListBankModel> getAllBanks({
@@ -12,6 +13,7 @@ abstract class BankRemoteDataSource {
     int? pageSize,
     FilterBankDto? filterBankDto,
   });
+
   Future<BankModel> getBankById(String oid);
   Future<void> createBank(CreateBankDto data);
   Future<void> updateBank(String oid, UpdateBankDto data);
@@ -20,8 +22,26 @@ abstract class BankRemoteDataSource {
 
 class BankRemoteDataSourceImplementation extends BankRemoteDataSource {
   final HttpManager _httpManager;
-  BankRemoteDataSourceImplementation({required HttpManager httpManager})
-    : _httpManager = httpManager;
+  final String baseUrl; // simpan baseUrl di sini
+  final bool enableLogging;
+
+  BankRemoteDataSourceImplementation({
+    required HttpManager httpManager,
+    this.baseUrl = ApiConstants.baseUrl, // default bisa diganti
+    this.enableLogging = true,
+  }) : _httpManager = httpManager;
+
+  Map<String, String> _defaultHeaders() => {
+    'Authorization': 'Bearer ${ApiConstants.staticToken}',
+    'Content-Type': 'application/json',
+  };
+
+  void _log(String title, dynamic value) {
+    if (enableLogging) {
+      print('=== $title ===');
+      print(value);
+    }
+  }
 
   @override
   Future<ListBankModel> getAllBanks({
@@ -30,40 +50,32 @@ class BankRemoteDataSourceImplementation extends BankRemoteDataSource {
     FilterBankDto? filterBankDto,
   }) async {
     try {
-      // --- Build query parameters ---
-      final Map<String, dynamic> query = {};
+      final query = <String, dynamic>{};
       if (pageIndex != null) query['pageIndex'] = pageIndex;
       if (pageSize != null) query['pageSize'] = pageSize;
 
-      // --- Build body ---
-      final Map<String, dynamic> body = (filterBankDto != null)
-          ? filterBankDto.toJson()
-          : {};
+      final body = filterBankDto?.toJson() ?? {};
 
-      // --- Optional logging ---
-      print('=== QUERY PARAMETERS ===');
-      print(query);
-      print('=== BODY ===');
-      print(body);
+      _log('QUERY PARAMETERS', query);
+      _log('REQUEST BODY', body);
 
-      // --- Send request ---
       final response = await _httpManager.post(
-        url: "${ApiConstants.bankRoot}/q", // pastikan endpoint benar
+        url: "${ApiConstants.bankRoot}/q",
         query: query,
         body: body,
-        headers: {'Authorization': 'Bearer ${ApiConstants.staticToken}'},
+        headers: _defaultHeaders(),
+        baseUrl: baseUrl,
       );
-      // --- Log response ---
-      print('=== API RESPONSE ===');
-      print('Status Code: ${response.statusCode}');
-      print('Data: ${response.data}');
 
-      // --- Return mapped model ---
+      _log('API RESPONSE', response.data);
+
       return ListBankModel.fromJson(response.data);
-    } catch (e, stackTrace) {
-      print('=== BANK API ERROR ===');
-      print(e);
-      print(stackTrace);
+    } on DioException catch (e) {
+      _log('DIO ERROR', e.response?.data ?? e.message);
+      rethrow;
+    } catch (e, st) {
+      _log('UNKNOWN ERROR', e);
+      _log('STACKTRACE', st);
       rethrow;
     }
   }
@@ -71,16 +83,21 @@ class BankRemoteDataSourceImplementation extends BankRemoteDataSource {
   @override
   Future<BankModel> getBankById(String oid) async {
     try {
-      //
       final response = await _httpManager.get(
         url: "${ApiConstants.bankRoot}/$oid",
-        headers: {'Authorization': 'Bearer ${ApiConstants.staticToken}'},
+        headers: _defaultHeaders(),
+        baseUrl: baseUrl,
       );
-      final bankModel = BankModel.fromJson(response.data['data']);
 
-      return bankModel;
-    } catch (e) {
-      //
+      _log('API RESPONSE GET BANK', response.data);
+
+      return BankModel.fromJson(response.data['data']);
+    } on DioException catch (e) {
+      _log('DIO ERROR', e.response?.data ?? e.message);
+      rethrow;
+    } catch (e, st) {
+      _log('UNKNOWN ERROR', e);
+      _log('STACKTRACE', st);
       rethrow;
     }
   }
@@ -90,10 +107,17 @@ class BankRemoteDataSourceImplementation extends BankRemoteDataSource {
     try {
       await _httpManager.post(
         url: '${ApiConstants.bankRoot}/create',
-        headers: {'Authorization': 'Bearer ${ApiConstants.staticToken}'},
+        headers: _defaultHeaders(),
         body: data.toJson(),
+        baseUrl: baseUrl,
       );
-    } catch (e) {
+      _log('CREATE BANK', 'Success');
+    } on DioException catch (e) {
+      _log('DIO ERROR', e.response?.data ?? e.message);
+      rethrow;
+    } catch (e, st) {
+      _log('UNKNOWN ERROR', e);
+      _log('STACKTRACE', st);
       rethrow;
     }
   }
@@ -101,12 +125,20 @@ class BankRemoteDataSourceImplementation extends BankRemoteDataSource {
   @override
   Future<void> updateBank(String oid, UpdateBankDto data) async {
     try {
-      await _httpManager.put(
+      final response= await _httpManager.put(
         url: "${ApiConstants.bankRoot}/$oid",
-        headers: {'Authorization': 'Bearer ${ApiConstants.staticToken}'},
+        headers: _defaultHeaders(),
         body: data.toJson(),
+        baseUrl: baseUrl,
       );
-    } catch (e) {
+      _log('UPDATE BANK RESPONSE', response);
+      _log('UPDATE BANK', 'Success');
+    } on DioException catch (e) {
+      _log('DIO ERROR', e.response?.data ?? e.message);
+      rethrow;
+    } catch (e, st) {
+      _log('UNKNOWN ERROR', e);
+      _log('STACKTRACE', st);
       rethrow;
     }
   }
@@ -114,11 +146,18 @@ class BankRemoteDataSourceImplementation extends BankRemoteDataSource {
   @override
   Future<void> deleteBank(String oid) async {
     try {
-      final response = await _httpManager.delete(
+      await _httpManager.delete(
         url: "${ApiConstants.bankRoot}/delete/$oid",
-        headers: {'Authorization': 'Bearer ${ApiConstants.staticToken}'},
+        headers: _defaultHeaders(),
+        baseUrl: baseUrl,
       );
-    } catch (e, stackTrace) {
+      _log('DELETE BANK', 'Success');
+    } on DioException catch (e) {
+      _log('DIO ERROR', e.response?.data ?? e.message);
+      rethrow;
+    } catch (e, st) {
+      _log('UNKNOWN ERROR', e);
+      _log('STACKTRACE', st);
       rethrow;
     }
   }

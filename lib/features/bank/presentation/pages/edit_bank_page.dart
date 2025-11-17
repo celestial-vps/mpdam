@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mpdam/features/bank/domain/entities/bank_entity.dart';
 import 'package:mpdam/features/bank/presentation/controllers/edit_bank_controller.dart';
-import 'package:mpdam/service_locator.dart';
+import 'package:mpdam/core/dependency_injection/service_locator.dart';
 
 class EditBankPage extends StatefulWidget {
   final String bankId;
@@ -19,17 +19,20 @@ class _EditBankPageState extends State<EditBankPage> {
 
   late EditBankController controller;
 
+  bool _initialized = false; // untuk menghindari reset textfield
+
   @override
   void initState() {
     super.initState();
     bankCodeController = TextEditingController();
     bankNameController = TextEditingController();
 
-    // Ambil controller dari service_locator
     controller = sl<EditBankController>();
 
-    // Load bank
+    _initialized = false; // <-- FIX: reset supaya edit ke-2 bekerja
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.bank.value = null;
       controller.loadBank(widget.bankId);
     });
   }
@@ -41,10 +44,13 @@ class _EditBankPageState extends State<EditBankPage> {
     super.dispose();
   }
 
-  // Auto update field ketika data bank berhasil di-load
-  void _fillFields(Bank bank) {
+  void _setInitialText(Bank bank) {
+    if (_initialized) return;
+
     bankCodeController.text = bank.bankCode;
     bankNameController.text = bank.bankName;
+
+    _initialized = true;
   }
 
   @override
@@ -56,16 +62,18 @@ class _EditBankPageState extends State<EditBankPage> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (controller.bank.value == null) {
+        final bank = controller.bank.value;
+        if (bank == null) {
           return Center(
-            child: Text(controller.errorMessage.isNotEmpty
-                ? controller.errorMessage.value
-                : "Bank not found"),
+            child: Text(
+              controller.errorMessage.isNotEmpty
+                  ? controller.errorMessage.value
+                  : "Bank not found",
+            ),
           );
         }
 
-        // isi input jika belum terisi
-        _fillFields(controller.bank.value!);
+        _setInitialText(bank);
 
         return Padding(
           padding: const EdgeInsets.all(16.0),
@@ -83,7 +91,6 @@ class _EditBankPageState extends State<EditBankPage> {
                 ),
                 const SizedBox(height: 20),
 
-                // Tombol update
                 ElevatedButton(
                   onPressed: controller.isUpdating.value
                       ? null
@@ -102,12 +109,27 @@ class _EditBankPageState extends State<EditBankPage> {
                                 backgroundColor: Colors.green,
                               ),
                             );
+
                             Navigator.pop(context, true);
                           }
                         },
-                  child: controller.isUpdating.value
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text("Update Bank"),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text("Update Bank"),
+                      if (controller.isUpdating.value) ...[
+                        const SizedBox(width: 10),
+                        const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
 
                 const SizedBox(height: 10),

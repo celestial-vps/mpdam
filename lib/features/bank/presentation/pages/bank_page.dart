@@ -4,11 +4,10 @@ import 'package:mpdam/core/entity/pagging_param.dart';
 import 'package:mpdam/core/widgets/app_confirm_dialog.dart';
 import 'package:mpdam/core/widgets/app_search_bar.dart';
 import 'package:mpdam/features/bank/domain/entities/search_bank_entity.dart';
-import 'package:mpdam/features/bank/presentation/controllers/delete-bank_controller.dart';
+import 'package:mpdam/features/bank/presentation/controllers/delete_bank_controller.dart';
 import 'package:mpdam/features/bank/presentation/widgets/bank_body.dart';
-import 'package:mpdam/features/bank/presentation/widgets/search_bank_bar.dart';
 import 'package:mpdam/features/bank/presentation/controllers/bank_controller.dart';
-import 'package:mpdam/service_locator.dart';
+import 'package:mpdam/core/dependency_injection/service_locator.dart';
 import 'package:go_router/go_router.dart';
 
 class BankPage extends StatefulWidget {
@@ -19,14 +18,13 @@ class BankPage extends StatefulWidget {
 }
 
 class _BankPageState extends State<BankPage> {
-  final BankController controller = Get.put(sl<BankController>());
-  final DeleteBankController deleteController = Get.put(
-    sl<DeleteBankController>(),
-  );
+  final BankController controller = Get.find<BankController>();
+  final DeleteBankController deleteController =
+      Get.find<DeleteBankController>();
 
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController(
-    text: "Bank Negara Indonesia",
+    text: "",
   );
 
   @override
@@ -60,7 +58,17 @@ class _BankPageState extends State<BankPage> {
 
     if (!confirmed) return;
 
+    // Tampilkan loading pakai context
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
     final success = await deleteController.deleteBank(bankId);
+
+    // Tutup loading
+    if (Navigator.canPop(context)) Navigator.pop(context);
 
     if (success) {
       controller.fetchBanks(refresh: true);
@@ -97,10 +105,18 @@ class _BankPageState extends State<BankPage> {
                 ),
               );
             },
-            onClear: () {
+            onClear: () async {
               _searchController.clear();
-              controller.fetchBanks(refresh: true);
+              controller.isLoading.value = true;
               FocusScope.of(context).unfocus();
+              await controller.fetchBanks(
+                refresh: true,
+                searchParam: BankSearchParam(
+                  search: {}, // kosongkan search
+                  pagination: PaggingParam(pageIndex: 1, pageSize: 10),
+                ),
+              );
+              // controller.fetchBanks(refresh: true);
             },
           ),
           Expanded(
@@ -114,7 +130,18 @@ class _BankPageState extends State<BankPage> {
                 errorMessage: controller.errorMessage.value,
                 onRefresh: () => controller.fetchBanks(refresh: true),
                 scrollController: _scrollController,
-                onEdit: (bank) => context.push('/edit-bank', extra: bank.oid),
+                // onEdit: (bank) => context.push('/edit-bank', extra: bank.oid),
+                onEdit: (bank) async {
+                  final result = await context.push(
+                    '/edit-bank',
+                    extra: bank.oid,
+                  );
+                  if (result == true) {
+                    controller.fetchBanks(
+                      refresh: true,
+                    ); // fetch ulang data terbaru
+                  }
+                },
                 onDelete: (bank) => _confirmDelete(bank.oid),
               ),
             ),

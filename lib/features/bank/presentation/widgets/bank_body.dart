@@ -30,16 +30,16 @@ class BankBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // if (isLoading) {
-    //   return const Center(child: CircularProgressIndicator());
-    // }
-    // if (errorMessage.isNotEmpty && banks.isEmpty) {
-    //   return Center(child: Text(errorMessage));
-    // }
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (errorMessage.isNotEmpty && banks.isEmpty) {
+      return Center(child: Text(errorMessage));
+    }
 
-    // if (banks.isEmpty) {
-    //   return const Center(child: Text('No banks found'));
-    // }
+    if (banks.isEmpty) {
+      return const Center(child: Text('No banks found'));
+    }
 
     return RefreshIndicator(
       onRefresh: onRefresh ?? () async {},
