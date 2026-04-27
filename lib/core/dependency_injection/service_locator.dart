@@ -36,6 +36,17 @@ import 'package:mpdam/features/bank/domain/usecases/get_bank_by_id_usecase.dart'
 import 'package:mpdam/features/bank/domain/usecases/update_bank_usecase.dart';
 import 'package:mpdam/features/bank/domain/usecases/delete_delete_usecase.dart';
 
+// Bank
+import 'package:mpdam/features/news/data/datasource/news_remote_datasource.dart';
+import 'package:mpdam/features/news/data/repositories/news_repository_imp.dart';
+import 'package:mpdam/features/news/domain/repositories/news_repository.dart';
+import 'package:mpdam/features/news/domain/usecases/list_news_usecase.dart';
+import 'package:mpdam/features/news/domain/usecases/create_news_usecase.dart';
+import 'package:mpdam/features/news/domain/usecases/get_news_by_id_usecase.dart';
+import 'package:mpdam/features/news/domain/usecases/update_news_usecase.dart';
+import 'package:mpdam/features/news/domain/usecases/delete_news_usecase.dart';
+
+
 final GetIt sl = GetIt.instance;
 
 Future<void> initDependencyInjection() async {
@@ -133,10 +144,31 @@ Future<void> initDependencyInjection() async {
       bankRemoteDataSource: sl(),
     ),
   );
+  
+  // NEWS
+  sl.registerLazySingleton<NewsRemoteDataSource>(
+    () => NewsRemoteDataSourceImplementation(
+      httpManager: sl(),
+      authLocal: sl(), // <- tambahkan ini
+    ),
+  );
 
-  sl.registerLazySingleton<GetInitBankUseCase>(() => GetInitBankUseCase(sl()));
-  sl.registerLazySingleton<CreateBankUseCase>(() => CreateBankUseCase(sl()));
-  sl.registerLazySingleton<GetBankByIdUseCase>(() => GetBankByIdUseCase(sl()));
-  sl.registerLazySingleton<UpdateBankUseCase>(() => UpdateBankUseCase(sl()));
-  sl.registerLazySingleton<DeleteBankUseCase>(() => DeleteBankUseCase(sl()));
+  sl.registerLazySingleton<NewsRepository>(
+    () => NewsRepositoryImplementation(
+      networkInfo: sl(),
+      newsRemoteDataSource: sl(),
+    ),
+  );
+
+  // sl.registerLazySingleton<GetInitBankUseCase>(() => GetInitBankUseCase(sl()));
+  // sl.registerLazySingleton<CreateBankUseCase>(() => CreateBankUseCase(sl()));
+  // sl.registerLazySingleton<GetBankByIdUseCase>(() => GetBankByIdUseCase(sl()));
+  // sl.registerLazySingleton<UpdateBankUseCase>(() => UpdateBankUseCase(sl()));
+  // sl.registerLazySingleton<DeleteBankUseCase>(() => DeleteBankUseCase(sl()));
+
+  // sl.registerLazySingleton<GetInitNewsUseCase>(() => GetInitNewsUseCase(sl()));
+  // sl.registerLazySingleton<CreateNewsUseCase>(() => CreateNewsUseCase(sl()));
+  // sl.registerLazySingleton<GetNewsByIdUseCase>(() => GetNewsByIdUseCase(sl()));
+  // sl.registerLazySingleton<UpdateNewsUseCase>(() => UpdateNewsUseCase(sl()));
+  // sl.registerLazySingleton<DeleteNewsUseCase>(() => DeleteNewsUseCase(sl()));
 }

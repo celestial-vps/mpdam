@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:get/get.dart';
+import 'package:mpdam/core/routing/news_routes.dart';
 import 'package:mpdam/features/auth/presentation/controllers/login_controller.dart';
 import 'package:mpdam/core/routing/auth_routes.dart';
 import 'package:mpdam/core/routing/home_routes.dart';
@@ -27,6 +28,7 @@ final goRouterGetX = GoRouter(
   routes: [
     ...authRoutes,
     ...homeRoutes,
+    ...newsRoutes,
     ...bankRoutes,
     ...customerRoutes,
     ...productRoutes,

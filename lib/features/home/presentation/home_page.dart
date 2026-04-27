@@ -127,41 +127,41 @@ class HomePage extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            Expanded(
-              flex: 3,
-              child: ListView.separated(
-                itemCount: beritaList.length,
-                separatorBuilder: (_, __) => const Divider(),
-                itemBuilder: (context, index) {
-                  final berita = beritaList[index];
-                  return ListTile(
-                    title: Text(
-                      berita['judul']!,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          berita['tanggal']!,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          berita['ringkasan']!,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                    leading: const Icon(Icons.article_outlined),
-                  );
-                },
-              ),
-            ),
+            // Expanded(
+            //   flex: 3,
+            //   child: ListView.separated(
+            //     itemCount: beritaList.length,
+            //     separatorBuilder: (_, __) => const Divider(),
+            //     itemBuilder: (context, index) {
+            //       final berita = beritaList[index];
+            //       return ListTile(
+            //         title: Text(
+            //           berita['judul']!,
+            //           style: const TextStyle(fontWeight: FontWeight.w600),
+            //         ),
+            //         subtitle: Column(
+            //           crossAxisAlignment: CrossAxisAlignment.start,
+            //           children: [
+            //             Text(
+            //               berita['tanggal']!,
+            //               style: const TextStyle(
+            //                 fontSize: 12,
+            //                 color: Colors.grey,
+            //               ),
+            //             ),
+            //             const SizedBox(height: 4),
+            //             Text(
+            //               berita['ringkasan']!,
+            //               maxLines: 2,
+            //               overflow: TextOverflow.ellipsis,
+            //             ),
+            //           ],
+            //         ),
+            //         leading: const Icon(Icons.article_outlined),
+            //       );
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ),

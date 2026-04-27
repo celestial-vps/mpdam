@@ -1,18 +1,18 @@
-// lib/core/router/app_router_bloc.dart
-import 'package:go_router/go_router.dart';
-import 'customer_routes.dart';
-import 'auth_routes.dart';
-import 'home_routes.dart';
-import 'product_routes.dart';
-import 'cart_routes.dart';
+// // lib/core/router/app_router_bloc.dart
+// import 'package:go_router/go_router.dart';
+// import 'customer_routes.dart';
+// import 'auth_routes.dart';
+// import 'home_routes.dart';
+// import 'product_routes.dart';
+// import 'cart_routes.dart';
 
-final goRouterBloc = GoRouter(
-  initialLocation: '/login',
-  routes: [
-    ...authRoutes,
-    ...homeRoutes,
-    ...customerRoutes,
-    ...productRoutes,
-    ...cartRoutes,
-  ],
-);
+// final goRouterBloc = GoRouter(
+//   initialLocation: '/login',
+//   routes: [
+//     ...authRoutes,
+//     ...homeRoutes,
+//     ...customerRoutes,
+//     ...productRoutes,
+//     ...cartRoutes,
+//   ],
+// );

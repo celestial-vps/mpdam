@@ -36,10 +36,10 @@ class LoginController extends GetxController {
   }
 
   Future<void> login(String email, String password) async {
-    if (email.isEmpty || password.isEmpty) {
-      errorMessage.value = "Email dan password wajib diisi";
-      return;
-    }
+    // if (email.isEmpty || password.isEmpty) {
+    //   errorMessage.value = "Email dan password wajib diisi";
+    //   return;
+    // }
 
     isLoading.value = true;
 
